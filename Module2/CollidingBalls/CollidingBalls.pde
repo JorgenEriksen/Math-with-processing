@@ -1,18 +1,19 @@
-float randomX;
-float randomY;
-boolean loop;
-float maxSpeed = 3;
-int r = 10;
-int numBalls = 20;
+float maxSpeed = 5;  // speed
+int r = 10;          // radius of ball
+int numBalls = 25;   // number of balls
+float ms;            // millis()
+float t;             // time value that restarts each run
 
-
-PVector[] pos = new PVector[numBalls];
-PVector[] vel = new PVector[numBalls];
-
-
+PVector[] pos = new PVector[numBalls]; // position
+PVector[] vel = new PVector[numBalls]; // velocity
 
 void setup(){
     size(500, 500);
+    boolean loop;
+    float randomX;
+    float randomY;
+    
+    // sets random position to balls and gives them 0 velocity
     for(int i=0; i<numBalls; i++){
       do{
         loop = false;
@@ -24,108 +25,75 @@ void setup(){
           }
         }
       } while(loop);
-      
       vel[i] = new PVector(0, 0); // no velocity
       pos[i] = new PVector(randomX, randomY);
     }
-    
+    // sets random velocity to ball number 0
     randomX = random(maxSpeed*-1, maxSpeed);
     randomY = random(maxSpeed*-1, maxSpeed);
-    vel[0] = new PVector(randomX, randomY);
-
+    vel[0] = new PVector(randomX, randomY).normalize();
 }
 
 
 void draw(){
   background(10, 10, 50);
+  t = millis()-ms; // resets the timer
+  t = t/20;        // makes the value smaler
+  ms = millis();
 
-  
   for(int i=0; i<numBalls; i++){
-     movement(i);
-     collision(i);
-     checkEdges(i);
-     
-     if(i==0) {
-       fill(200, 0, 0);
-     } else {
-       fill(255); 
-     }
+     movement(i);     // moves the ball
+     collision(i);    // checks for collision and calculates new velocity for colliding ball
+     checkEdges(i);   // so it bounces on walls
+     fill(255); 
      ellipse(pos[i].x, pos[i].y, r*2, r*2);
   }
-  
-
-}
-
-void collision(int i){
-  print("\nHER");
-  for(int a=0; a<numBalls; a++){
-    if(distance(pos[i], pos[a]) <= r*2 && distance(pos[i], pos[a]) != 0){
-      float distanceX = pos[a].x - pos[i].x;
-      float distanceY = pos[a].y - pos[i].y;
-      
-      float angle = atan2(distanceY, distanceX);
-      float sin = sin(angle);
-      float cos = cos(angle);
-      
-
-      
-      float vx2 = vel[i].x*cos+vel[i].y*sin;
-      float vy2 = vel[i].y*cos-vel[i].x*sin;
-      
-      float vx1 = 0;
-      float vy1 = 0;
-      
-
-      /*
-      float vx1 = vel[i].x*cos+vel[i].y*sin;
-      float vy1 = vel[i].y*cos-vel[i].x*sin;
-      
-      float vx2 = vel[a].x*cos+vel[a].y*sin;
-      float vy2 = vel[a].y*cos-vel[a].x*sin;
-      */
-      
-      print("\nvel[i]: " + vel[i]);
-      print("\nvel[a]: " + vel[a]);
-      
-      print("\nvx1 :" + vx1);
-      print("\nvy1 :" + vy1);
-      print("\nvx2 :" + vx2);
-      print("\nvy2 :" + vy2);
-      
-      vel[i].x = vx1;
-      vel[i].y = vy1;
-      
-      vel[a].x = vx2;
-      vel[a].y = vy2;
-      
-      
-    
-    }
-  }
-
-
 }
 
 void movement(int i){
+  vel[i].mult(5);
   vel[i].limit(maxSpeed);
-  pos[i].add(vel[i]);
+  pos[i].x = lerpFormula(t, pos[i].x, vel[i].x + pos[i].x);
+  pos[i].y = lerpFormula(t, pos[i].y, vel[i].y + pos[i].y);
 }
+
+void collision(int i){
+  for(int a=0; a<numBalls; a++){
+    // if collision/overlap 
+    if(distance(pos[i], pos[a]) <= r*2 && i != a){
+      float distanceX = pos[a].x - pos[i].x; 
+      float distanceY = pos[a].y - pos[i].y;
+      PVector newVel = new PVector(distanceX, distanceY); // new velocity
+      newVel.normalize(); // makes it a unit vector
+      vel[a] = newVel;    // sets the new velocity
+      pos[a].add(vel[a]); // moves out of collision state
+    }   
+  }
+}
+
 
 void checkEdges(int i){
   if(pos[i].x > width-r){
     vel[i].x = -vel[i].x;
+    pos[i].x = width-r;
   } else if (pos[i].x < r) {
     vel[i].x = -vel[i].x;
+    pos[i].x = r;
   }
   
   if(pos[i].y > height-r){
     vel[i].y = -vel[i].y;
+    pos[i].y = height-r;
   } else if (pos[i].y < r) {
     vel[i].y = -vel[i].y;
+    pos[i].y = r;
   }
-
 }
 
 float distance(PVector vector, PVector vector2){
   return sqrt( pow(vector.x-vector2.x, 2) + pow(vector.y-vector2.y, 2) );
+}
+
+float lerpFormula(float t, float p1, float p2) {
+   return (1-t)*p1 + t*p2;
 }
