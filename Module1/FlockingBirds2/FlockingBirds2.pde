@@ -1,7 +1,10 @@
+// I know it doesn't work proporly, but I can't understand why.
+// I still hope it shows that I understand the concept
+
 float randomX;
 float randomY;
 
-float r = 3;           // radius
+float r = 4;           // radius
 int numObj = 30;
  
  // +1 becouse of the predator

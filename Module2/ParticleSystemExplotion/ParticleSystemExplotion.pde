@@ -5,6 +5,7 @@ float spawnTimer;              // used together with objPerSeconds
 float objPerSeconds = 20;      // how many objects will be spawn per seconds
 float velWeight = 3.5;         // the weight of velocity vector
 float acceleration = 0.05;     // acceleration y-axis
+float wind = -0.015;           // wind
 int explodeChance = 6;         // chance of explode in percent
 int ballsFromExplosion = 10;   // number of balls spawn from explosion
 float maxExplodeTime = 0.8;    // max explodetime in seconds
@@ -62,7 +63,7 @@ class PhysOb  {
   // constructor
   PhysOb (PVector position, boolean createdFromExplosion) {
     float radians, degree;
-    acc = new PVector(0, acceleration);
+    acc = new PVector(wind, acceleration);
     if(!createdFromExplosion){         // if its not created from explosion
       degree = random(-135, -45);      // random degree
       willExplode = randomExplode();
@@ -113,4 +114,9 @@ class PhysOb  {
       return false;
     }
   }
+}
+
+
+void keyPressed() {
+  save("myimage.png");
 }

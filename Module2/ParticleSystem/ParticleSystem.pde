@@ -2,9 +2,10 @@ float ms;            // millis()
 float t;             // time value that restarts each run
 float r = 9;         // radius
 float spawnTimer;          // used together with objPerSeconds
-float objPerSeconds = 10;  // how many objects will be spawn per seconds
+float objPerSeconds = 12;  // how many objects will be spawn per seconds
 float velWeight = 3.5;     // the weight of velocity vector
 float acceleration = 0.05; // acceleration y-axis
+float wind = -0.015;       // wind
 ArrayList<PhysOb> object;  // array of objects
 
 void setup() {
@@ -47,7 +48,7 @@ class PhysOb  {
 
   // constructor
   PhysOb (PVector position) {
-    acc = new PVector(0, acceleration);
+    acc = new PVector(wind, acceleration);
     float degree = random(-135, -45); // random degree
     float radians = degree * PI/180;  // degree to radians
     vel = new PVector(cos(radians), sin(radians));
@@ -73,4 +74,8 @@ class PhysOb  {
       return false;
     }
   }
+}
+
+void keyPressed() {
+  save("myimage.png");
 }

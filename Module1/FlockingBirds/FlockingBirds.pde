@@ -94,7 +94,6 @@ void draw() {
   }
   
   
-  /*
   
     //predator
     target = avgPos(numObj);
@@ -103,7 +102,7 @@ void draw() {
     checkEdges(numObj);
     display(numObj);
     
-    */
+   
     
   once = true;
     
